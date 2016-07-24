@@ -17,3 +17,8 @@ Really there are two reasons:
 
 1. Draw inspiration from existing projects.
 2. Reference Python's [excellent documentation](https://docs.python.org/3/reference/index.html).
+
+# Building
+
+Using g++ 5.2.0:
+`g++ PyObj.hpp instructions.hpp virtual_machine.hpp virtual_machine.cpp main.cpp -Wall -Werror -fno-rtti -std=c++14`
