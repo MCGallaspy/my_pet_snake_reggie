@@ -1,41 +1,35 @@
+#include <fstream>
 #include <iostream>
+#include <vector>
 
 #include "virtual_machine.hpp"
+#include "unmarshal.hpp"
 
-using std::make_shared;
+using std::ifstream;
+using std::cout;
+using std::endl;
 
-int main() {
-/* Some example bytecode for a very simple func:
-
-   def foo(a, b): 
-..   return a + b 
-..   
-=> None
-   foo.__code__
-=> <code object foo at 0x7f4bdaf26390, file "python", line 1>
-   dis.dis(foo)
-  2           0 LOAD_FAST                0 (a)
-              3 LOAD_FAST                1 (b)
-              6 BINARY_ADD
-              7 RETURN_VALUE
-
-*/	
-    CodeObj code;
-    const uint8_t arr[] = {
-        1, 0, 0, \
-        1, 1, 0, \
-        2, \
-        3, \
-    };
-    vector<uint8_t> v(arr, arr + sizeof(arr) / sizeof(arr[0]));
-    code.instrs = v;
-    PyObjPtr a = make_shared<PyObj>(200), b = make_shared<PyObj>(7);
-    code.objects = PyObjList();
-    code.objects.push_back(a);
-    code.objects.push_back(b);
+int main(int argc, char** argv) {
+    ifstream file("test_dict.cpython-35.pyc", ifstream::binary);
     
-    VirtualMachine vm;
-    vm.run_code(code);
+    if(!file.good()) {
+        std::cout << "Bad file" << std::endl;
+    }
     
+    // Burn the magic number...
+    char c;
+    for(int i=0; i<12; ++i) {
+        file.get(c);
+    }
+
+    std::vector<uint8_t> code;
+    while (file.get(c)) {
+        code.push_back(static_cast<uint8_t>(c));
+    }
+ 
+    std::cout << std::endl;
+
+    unmarshal(code.data());
+
     return 0;
 }

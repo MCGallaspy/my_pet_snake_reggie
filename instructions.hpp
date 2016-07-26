@@ -31,6 +31,10 @@ public:
                 vm->m_stack.pop_back();
                 break;
             }
+            default: {
+
+            break;
+            }
         }
         return why;
     }

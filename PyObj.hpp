@@ -1,6 +1,8 @@
 #ifndef PY_OBJ
 #define PY_OBJ
+
 #include <memory>
+#include <string>
 #include <vector>
 
 class PyObj;
@@ -9,7 +11,16 @@ typedef std::vector<PyObjPtr> PyObjList;
 
 struct PyObj {
     int val;
-    PyObj(int v) : val(v) {}
+    std::string str;
+    
+    PyObj(PyObj&& orig) {
+        this->val = orig.val;
+        this->str = orig.str;
+    }
+    
+    PyObj() {}
+    
+    PyObj(int n) : val(n) {}
 };
 
 #endif
