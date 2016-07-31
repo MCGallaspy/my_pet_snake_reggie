@@ -22,7 +22,9 @@ public:
                 vm->m_stack.pop_back();
                 auto b = (vm->m_stack.back())->val;
                 vm->m_stack.pop_back();
-                vm->m_stack.push_back(std::make_shared<PyObj>(a + b));
+                auto new_obj = std::make_shared<PyObj>();
+                new_obj->val = a + b;
+                vm->m_stack.push_back(new_obj);
                 break;
             }
             case 3: {
