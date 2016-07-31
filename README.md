@@ -21,8 +21,7 @@ Really there are two reasons:
 
 # Building
 
-Using g++ 5.2.0:
-`g++ PyObj.hpp instructions.hpp virtual_machine.hpp virtual_machine.cpp unmarshal.hpp main.cpp -Wall -Werror -fno-rtti -std=c++14`
+I use `g++ 5.2.0` and `make`. Run `make` in this directory.
 
 # Reverse engineering .pyc files
 
