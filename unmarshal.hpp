@@ -26,7 +26,7 @@ PyObjPtr unmarshal(const byte contents[]);
 
 PyObjPtr unmarshal_code(const byte contents[], size_t& offset);
 
-uint32_t _read_uint32(const byte contents[], size_t& offset);
+int32_t read_int32(const byte contents[], size_t& offset);
 
 PyObjPtr _unmarshal_tuple(const byte contents[], size_t& offset);
 PyObjPtr _unmarshal_dict(const byte contents[], size_t& offset);

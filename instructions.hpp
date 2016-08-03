@@ -18,18 +18,17 @@ public:
                 break;
             }
             case 2: {
-                auto a = vm->m_stack.back()->val;
+                auto a = vm->m_stack.back()->get_val();
                 vm->m_stack.pop_back();
-                auto b = (vm->m_stack.back())->val;
+                auto b = (vm->m_stack.back())->get_val();
                 vm->m_stack.pop_back();
-                auto new_obj = std::make_shared<PyObj>();
-                new_obj->val = a + b;
+                auto new_obj = std::make_shared<PyObj>(a + b);
                 vm->m_stack.push_back(new_obj);
                 break;
             }
             case 3: {
                 why = Return;
-                std::cout << "returning " << vm->m_stack.back()->val << std::endl;
+                std::cout << "returning " << vm->m_stack.back()->get_val() << std::endl;
                 vm->m_stack.pop_back();
                 break;
             }

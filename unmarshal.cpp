@@ -38,15 +38,13 @@ PyObjPtr _unmarshal(const byte contents[], size_t& offset) {
             break;
         case TYPE_INT: {
             std::cout << "Got int type " << type << std::endl;
-            auto tmp = std::make_shared<PyObj>();
-            tmp->val = _read_uint32(contents, offset);
-            return tmp;
+            auto tmp = read_int32(contents, offset);
+            return std::make_shared<Integer>(tmp);
             break;
         }
         case TYPE_REF: {
-            auto tmp = std::make_shared<PyObj>();
-            tmp->val = _read_uint32(contents, offset);
-            std::cout << "Got ref type " << type << " to " << tmp->val << std::endl;
+            auto tmp = std::make_shared<PyObj>(read_int32(contents, offset));
+            std::cout << "Got ref type " << type << " to " << tmp->get_val() << std::endl;
             return tmp;
             break;
         }   
@@ -102,12 +100,12 @@ PyObjPtr _unmarshal_dict(const byte contents[], size_t& offset) {
     return nullptr;
 }
 
-uint32_t _read_uint32(const byte contents[], size_t& offset) {
+int32_t read_int32(const byte contents[], size_t& offset) {
     uint32_t val = 0;
     uint32_t base = 1;
     for (int i=0; i<4; ++i) {
         uint8_t tmp = contents[++offset];
-        val += static_cast<uint32_t>(tmp) * base;
+        val += static_cast<int32_t>(tmp) * base;
         base *= 256;
     }
     return val;
@@ -117,7 +115,7 @@ PyObjPtr _unmarshal_str(const byte contents[], size_t& offset, bool is_short) {
     size_t len;
     if (!is_short) {
         std::cout << "Wide string... ";
-        len = _read_uint32(contents, offset);
+        len = read_int32(contents, offset);
     } else {
         std::cout << "Short string... ";
         len = static_cast<size_t>(contents[++offset]);
@@ -138,12 +136,12 @@ PyObjPtr _unmarshal_tuple(const byte contents[], size_t& offset) {
     if (type == TYPE_SMALL_TUPLE) {
         n = static_cast<size_t>(contents[++offset]);
     } else if (type == TYPE_TUPLE) {
-        uint32_t tmp = _read_uint32(contents, offset);
+        uint32_t tmp = read_int32(contents, offset);
         n = static_cast<size_t>(tmp);
     } else {
         std::cout << "Got unknown type " << type << std::endl;
         std::cout << "Offset " << offset << std::endl;
-        uint32_t tmp = _read_uint32(contents, offset);
+        uint32_t tmp = read_int32(contents, offset);
         n = static_cast<size_t>(tmp);
     }
         // Placeholder code...
@@ -153,7 +151,6 @@ PyObjPtr _unmarshal_tuple(const byte contents[], size_t& offset) {
         
     PyObjPtr retval = std::make_shared<PyObj>();
     retval->str = std::string(buf);
-    retval->val = -1;
 
     for (size_t i=0; i<n; ++i) {
         _unmarshal(contents, offset);
@@ -165,15 +162,15 @@ PyObjPtr _unmarshal_tuple(const byte contents[], size_t& offset) {
 PyObjPtr unmarshal_code(const byte contents[], size_t& offset) {
     // size_t offset = 1; // 0th byte is the type code.
     
-    uint32_t argc = _read_uint32(contents, offset);
+    uint32_t argc = read_int32(contents, offset);
     
-    uint32_t kw_argc = _read_uint32(contents, offset);
+    uint32_t kw_argc = read_int32(contents, offset);
 
-    uint32_t nlocals = _read_uint32(contents, offset);
+    uint32_t nlocals = read_int32(contents, offset);
 
-    uint32_t stack_size = _read_uint32(contents, offset);
+    uint32_t stack_size = read_int32(contents, offset);
     
-    uint32_t flags = _read_uint32(contents, offset);
+    uint32_t flags = read_int32(contents, offset);
      
     std::cout << "Unmarshalling the code bytestring..." << std::endl;
     PyObjPtr code = _unmarshal(contents, offset);
@@ -188,7 +185,7 @@ PyObjPtr unmarshal_code(const byte contents[], size_t& offset) {
 
     std::string name = _unmarshal(contents, offset)->str;
 
-    uint32_t first_line_no = _read_uint32(contents, offset);
+    uint32_t first_line_no = read_int32(contents, offset);
     
     PyObjPtr lnotab = _unmarshal(contents, offset);
 
