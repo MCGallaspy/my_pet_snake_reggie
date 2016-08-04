@@ -64,10 +64,12 @@ PyObjPtr _unmarshal(const byte contents[], size_t& offset) {
             std::cout << "Got False!" << std::endl;
             return nullptr;
             break;
-        case TYPE_BINARY_FLOAT:
-            std::cout << "Got binary float: " << _unmarshal_nstr(contents, offset, 8)->str << std::endl;
-            return nullptr;
+        case TYPE_BINARY_FLOAT: {
+            FloatPtr tmp = unmarshal_float(contents, offset);
+            std::cout << "Got binary float: " << tmp->get_float() << std::endl;
+            return tmp;
             break;
+        }
         }
     
     std::cout << "Got unknown type " << type << std::endl;
@@ -85,6 +87,25 @@ PyObjPtr _unmarshal_nstr(const byte contents[], size_t& offset, size_t n) {
     retval->str = str;
     std::cout << "Reading string of size " << n << " it was " << str << std::endl;
     return retval;
+}
+
+/*
+A marshalled float in Python 3.5 is an IEEE 8-byte float written in
+little-endian format -- sign, exponent, then mantissa.
+In particular if your system is little-endian and your C++ implementation
+uses IEEE 754 format then you can just reinterpret the bytes as a
+double.
+
+Otherwise you have to do some juggling to get it right.
+*/
+FloatPtr unmarshal_float(const byte contents[], size_t& offset) {
+    constexpr size_t n = 8;
+    char buf[n];
+    for (size_t i=0; i<n; ++i) {
+        buf[i] = contents[++offset];
+    }
+    double* tmp = reinterpret_cast<double*>(buf);
+    return std::make_shared<Float>(*tmp);
 }
 
 PyObjPtr _unmarshal_dict(const byte contents[], size_t& offset) {

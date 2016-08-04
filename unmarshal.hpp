@@ -33,5 +33,6 @@ PyObjPtr _unmarshal_dict(const byte contents[], size_t& offset);
 PyObjPtr _unmarshal_str(const byte contents[], size_t& offset, bool is_short = false);
 PyObjPtr _unmarshal(const byte contents[], size_t& offset);
 PyObjPtr _unmarshal_nstr(const byte contents[], size_t& offset, size_t n);
+FloatPtr unmarshal_float(const byte contents[], size_t& offset);
     
 #endif

@@ -49,7 +49,22 @@ public:
     explicit Integer(int32_t _int) : m_int(_int) {}
     Integer() = delete;
     
-    int32_t get_val() { return m_int; }
+    int32_t get_int() { return m_int; }
 };
+
+
+class Float : public Number {
+private:
+    double m_val;
+public:
+    explicit Float(double v) : m_val(v) {}
+    Float() = delete;
+
+    double get_float() { return m_val; }
+};
+
+
+typedef std::shared_ptr<Float> FloatPtr;
+
 
 #endif
